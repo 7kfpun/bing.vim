@@ -24,7 +24,7 @@ function! bing#Bing(...)
             echo s:CleanHtml(li_element.find('h2').toString())
             echo li_element.find('a').attr['href']
             echo s:CleanHtml(li_element.find('p').toString())
-            echo
+            echo ''
         endfor
 
     catch
@@ -32,3 +32,9 @@ function! bing#Bing(...)
     endtry
 
 endfunction
+
+
+function! bing#BingLines(...)
+    echo 'Bing lines'
+endfunction
+
