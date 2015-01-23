@@ -14,8 +14,11 @@ endfunction
 
 function! bing#Bing(...)
 
-    let request_uri = 'http://www.bing.com/search?q='.join(a:000, '%20')
-    echo request_uri
+    let query = join(a:000, ' ')
+    let query = substitute(query, '\s\{1,}', '%20', 'g')
+
+    let request_uri = 'http://www.bing.com/search?q='.query
+    echo 'Searching... '.request_uri
     try
         let response = webapi#http#get(request_uri)
         let g:dom = webapi#xml#parse(response.content)
@@ -34,7 +37,7 @@ function! bing#Bing(...)
 endfunction
 
 
-function! bing#BingLines(...)
-    echo 'Bing lines'
+function! bing#BingLines() range
+    return bing#Bing(join(getline("'<", "'>"), ''))
 endfunction
 
