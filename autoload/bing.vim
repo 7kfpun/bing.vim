@@ -22,12 +22,20 @@ function! bing#Bing(...)
         let response = webapi#http#get(request_uri)
         let g:dom = webapi#xml#parse(response.content)
 
+        let results = []
         for li_element in g:dom.findAll('li', {'class': 'b_algo'})
-            echo s:CleanHtml(li_element.find('h2').toString())
-            echo li_element.find('a').attr['href']
-            echo s:CleanHtml(li_element.find('p').toString())
-            echo ''
+            let result = {}
+            let heading = s:CleanHtml(li_element.find('h2').toString())
+            let url = li_element.find('a').attr['href']
+            let body = s:CleanHtml(li_element.find('p').toString())
+            let result.heading = heading
+            let result.url = url
+            let result.body = body
+            " echo result
+            call add(results, result)
         endfor
+
+        return results
 
     catch
         echoerr 'Something wrong with the internet.'
@@ -39,4 +47,3 @@ endfunction
 function! bing#BingLines() range
     return bing#Bing(join(getline("'<", "'>"), ''))
 endfunction
-
