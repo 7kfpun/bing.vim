@@ -5,7 +5,6 @@ scriptencoding utf-8
 
 
 function! s:CleanHtml(string)
-    let string = a:string
     let string = substitute(a:string, "<[^>]*>", "", "g")
     let string = webapi#html#decodeEntityReference(string)
     return string
