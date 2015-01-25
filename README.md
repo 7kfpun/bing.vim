@@ -10,8 +10,8 @@ Simple plugin for searching bing in Vim.
 # Usage
 
     // Without Unite.vim
-    :bing <query>
-    :'<,'>BingLines
+    :Bing <query>  // Bing search the input query
+    :'<,'>BingLines  // Bing search the selected lines
 
     // With Unite.vim
     :Unite bing
