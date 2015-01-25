@@ -25,14 +25,19 @@ endif
 
 
 function! s:open_browser(url)
-    if has('win32')
-        " Target command: start "" "<url>"
-        silent! execute "! " . g:bing_open_command . " \"\" \"" . a:url . "\""
-    else
-        silent! execute "! " . g:bing_open_command . ' "' . a:url . '" > /dev/null 2>&1 &'
-    endif
+    echomsg 'Open: ' . a:url
+    call xolox#misc#open#url(a:url)
+
+    " if has('win32')
+        " " Target command: start "" "<url>"
+        " silent! execute "! " . g:bing_open_command . " \"\" \"" . a:url . "\""
+    " else
+        " silent! execute "! " . g:bing_open_command . ' "' . a:url . '" > /dev/null 2>&1 &'
+    " endif
 endfunction
 
+
+let s:input_query = ''
 
 " Unite integration {{{
 " =====================
@@ -42,62 +47,42 @@ endfunction
     endfunction
 
     function! s:source.hooks.on_init(args, context) "{{{
-        if type(get(a:args, 0, '')) == type([])
-            " Use args directly.
-            let a:context.source__is_dummy = 0
+        if !empty(a:args)
             return
         endif
 
-        let command = join(filter(copy(a:args), "v:val !=# '!'"), ' ')
-        if command == ''
-            let command = unite#util#input(
-                        \ 'Please input Vim command: ', '', 'command')
-            redraw
-        endif
-        let a:context.source__command = command
-        let a:context.source__is_dummy = (get(a:args, -1, '') ==# '!')
-
-        if !a:context.source__is_dummy
-            call unite#print_source_message('command: ' . command, s:source.name)
-        endif
+        let s:input_query = unite#util#input('Bing search: ', '', '')
     endfunction"}}}
 
     fun! s:source.gather_candidates(args, context) "{{{
-        echo a:args
-
-        " if type(get(a:args, 0, '')) == type([])
-            " Use args directly.
+        if !empty(a:args)
             let query = join(a:args, ' ')
-        " else
-            " redir => output
-            " silent! execute a:context.source__command
-            " redir END
-
-            " let query = split(output, '\r\n\|\n')
-            " let query = 'test'
-            " echo query
-        " endif
+        else
+            let query = s:input_query
+        endif
 
         let results = bing#Bing(query)
         
         return map(results, "{
-            \ 'word' : v:val.heading.'   '.v:val.body,
+            \ 'word' : v:val.heading . '   ' . v:val.body,
             \ 'url': v:val.url,
             \ 'cmd': ''
         \ }")
     endfun "}}}
 
-    let s:source.action_table.execute = {'description' : 'play station'}
-    fun! s:source.action_table.execute.func(candidate) "{{{
-        echo a:candidate.url
+    let s:source.action_table.execute = {
+                \ 'description' : 'narrow source',
+                \ 'is_quit' : 0,
+                \ }
+    function! s:source.action_table.execute.func(candidate) "{{{
         call s:open_browser(a:candidate.url)
-    endfunction "}}}
+    endfunction"}}}
 
-    fun! s:source.hooks.on_syntax(args, context) "{{{
-    endfunction "}}}
+    " fun! s:source.hooks.on_syntax(args, context) "{{{
+    " endfunction "}}}
 
-    fun! s:source.hooks.on_post_filter(args, context) "{{{
-    endfunction "}}}
+    " fun! s:source.hooks.on_post_filter(args, context) "{{{
+    " endfunction "}}}
 
 " }}}
 
