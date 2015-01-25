@@ -25,4 +25,4 @@ endfunction
 
 
 command! -nargs=+ Bing :echo bing#Bing(<f-args>)
-command -range -nargs=0 BingLines  <line1>,<line2>call bing#BingLines()
+command -range -nargs=0 BingLines :echo bing#BingLines()

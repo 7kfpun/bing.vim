@@ -32,7 +32,6 @@ function! bing#Bing(...)
             let result.heading = heading
             let result.url = url
             let result.body = body
-            " echo result
             call add(results, result)
         endfor
 
@@ -46,5 +45,5 @@ endfunction
 
 
 function! bing#BingLines() range
-    return bing#Bing(join(getline("'<", "'>"), ''))
+    return bing#Bing(webapi#http#encodeURI(join(getline("'<", "'>"), '')))
 endfunction
