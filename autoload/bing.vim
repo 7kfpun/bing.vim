@@ -10,7 +10,7 @@ function! bing#CleanHtml(string)
     let string = webapi#html#decodeEntityReference(string)
     return string
 endfunction
-    
+
 
 function! bing#Bing(...)
 
@@ -44,6 +44,35 @@ function! bing#Bing(...)
 endfunction
 
 
+function! bing#BingResult(...)
+
+    let query = join(a:000, ' ')
+    let query = substitute(query, '\s\{1,}', '%20', 'g')
+
+    let request_uri = 'http://www.bing.com/search?q='.query
+    echo 'Searching... '.request_uri
+    try
+        let response = webapi#http#get(request_uri)
+        let dom = webapi#xml#parse(response.content)
+
+        let results = []
+        for li_element in dom.findAll('li', {'class': 'b_algo'})
+            let heading = bing#CleanHtml(li_element.find('h2').toString())
+            let url = li_element.find('a').attr['href']
+            let body = bing#CleanHtml(li_element.find('p').toString())
+            let result = heading . "\n" . url . "\n" . body . "\n\n"
+            call add(results, result)
+        endfor
+
+        return join(results, '')
+
+    catch
+        echoerr 'Something wrong with the internet.'
+    endtry
+
+endfunction
+
+
 function! bing#BingLines() range
-    return bing#Bing(webapi#http#encodeURI(join(getline("'<", "'>"), '')))
+    return bing#BingResult(webapi#http#encodeURI(join(getline("'<", "'>"), '')))
 endfunction

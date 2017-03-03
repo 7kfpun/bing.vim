@@ -24,5 +24,6 @@ function! s:check_defined(variable, default)
 endfunction
 
 
-command! -nargs=+ Bing :echo bing#Bing(<f-args>)
+command! -nargs=+ BingRaw :echo bing#Bing(<f-args>)
+command! -nargs=+ Bing :echo bing#BingResult(<f-args>)
 command -range -nargs=0 BingLines :echo bing#BingLines()

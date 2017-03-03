@@ -62,7 +62,7 @@ let s:input_query = ''
         endif
 
         let results = bing#Bing(query)
-        
+
         return map(results, "{
             \ 'word' : v:val.heading . '   ' . v:val.body,
             \ 'url': v:val.url,
